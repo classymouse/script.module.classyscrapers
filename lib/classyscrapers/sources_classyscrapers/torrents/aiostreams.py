@@ -1,6 +1,6 @@
-# created by kodifitzwell for Fenomscrapers
+# created by kodifitzwell
 """
-	Fenomscrapers Project
+	Classy Scrapers Project
 """
 
 #from json import loads as jsloads

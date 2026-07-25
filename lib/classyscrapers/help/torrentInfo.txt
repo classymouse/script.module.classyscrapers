@@ -1,5 +1,7 @@
 With a bit of testing the top providers for results are set for the Defaults while the remaining providers are used as backup.
-Currently, Torrentio and the Elfhosted scrapers yield the best results.
+
+Currently (movies): Comet is by far the strongest single source for results.
+Torrentio and the other Elfhosted scrapers remain strong overall and are especially useful as backup / for TV and edge cases.
 
 A setting in some add-ons is used to control when disabled providers are used. If no results are found on the enabled sources, the add-on will automatically check ALL providers regardless of them being disabled in the settings. This allows you to keep a minimum number of providers enabled, resulting in quicker scrapes and results.
 

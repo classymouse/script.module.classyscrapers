@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Classy Scrapers — dialog base
 """
 
 from xbmc import executebuiltin
@@ -9,7 +9,8 @@ from xbmcgui import WindowXMLDialog, ListItem, ControlProgress
 
 class BaseDialog(WindowXMLDialog):
 	def __init__(self, *args):
-		WindowXMLDialog.__init__(self, args)
+		# Must splat args — WindowXMLDialog(xml, path[, defaultSkin[, defaultRes]])
+		WindowXMLDialog.__init__(self, *args)
 		self.closing_actions = [9, 10, 13, 92]
 		self.selection_actions = [7, 100]
 		self.context_actions = [101, 117]

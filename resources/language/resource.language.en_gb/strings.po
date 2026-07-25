@@ -8,19 +8,19 @@ msgid ""
 msgstr ""
 
 msgctxt "#32001"
-msgid "[COLOR FFA0C12C]-- Help --[/COLOR]"
+msgid "[COLOR orchid]-- Help --[/COLOR]"
 msgstr ""
 
 msgctxt "#32002"
-msgid "[COLOR FFA0C12C]-- pack scraper Help --[/COLOR]"
+msgid "[COLOR orchid]-- pack scraper Help --[/COLOR]"
 msgstr ""
 
 msgctxt "#32003"
-msgid "[COLOR lime]<  Undesirables Filter Help >[/COLOR]"
+msgid "[COLOR orchid]<  Undesirables Filter Help >[/COLOR]"
 msgstr ""
 
 msgctxt "#32004"
-msgid "[COLOR FFA0C12C]-- my accounts Help --[/COLOR]"
+msgid "[COLOR orchid]-- my accounts Help --[/COLOR]"
 msgstr ""
 
 msgctxt "#32005"
@@ -120,7 +120,7 @@ msgid "GDrive Worker URL"
 msgstr ""
 
 msgctxt "#32040"
-msgid "[COLOR lime]< Torrent scraper Info >[/COLOR]"
+msgid "[COLOR orchid]< Torrent scraper Info >[/COLOR]"
 msgstr ""
 
 msgctxt "#32041"
@@ -312,7 +312,7 @@ msgid "Success"
 msgstr ""
 
 msgctxt "#32088"
-msgid "[COLOR lime]< [B]Pairing Instructions[/B] >[/COLOR]"
+msgid "[COLOR orchid]< [B]Pairing Instructions[/B] >[/COLOR]"
 msgstr ""
 
 msgctxt "#32089"
@@ -632,7 +632,7 @@ msgid "Setup"
 msgstr ""
 
 msgctxt "#32517"
-msgid "[COLOR FFA0C12C]-- Setup Help --[/COLOR]"
+msgid "[COLOR orchid]-- Setup Help --[/COLOR]"
 msgstr ""
 
 msgctxt "#32518"
@@ -801,7 +801,7 @@ msgstr ""
 
 msgctxt "#32561"
 msgid "Bypass title filter for more results (may get incorrect sources)"
-msgstr ""
+msgstr "Bypass title filter for more results (may get incorrect sources)"
 
 msgctxt "#32562"
 msgid "Enabling this setting will bypass the filter removing results that do not match the title name. This may result in some incorrect sources."
@@ -830,6 +830,7 @@ msgstr ""
 msgctxt "#32569"
 msgid "View ClassyScrapers torrent stats"
 msgstr ""
+
 msgctxt "#32600"
 msgid "DMM - DebridMediaManager"
-msgstr ""
+msgstr "DMM - DebridMediaManager"

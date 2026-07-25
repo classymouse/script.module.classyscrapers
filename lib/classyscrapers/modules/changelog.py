@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Classy Scrapers Module
 """
 
 from classyscrapers.modules.control import addonPath, addonVersion, joinPath

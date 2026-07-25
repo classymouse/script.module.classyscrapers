@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Classy Scrapers Module
 """
 
 from sys import argv

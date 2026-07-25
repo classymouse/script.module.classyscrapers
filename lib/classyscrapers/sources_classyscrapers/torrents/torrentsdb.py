@@ -1,11 +1,10 @@
-# created by kodifitzwell for Fenomscrapers
+# created by kodifitzwell
 """
-	Fenomscrapers Project
+	Classy Scrapers Project
 """
 
 #from json import loads as jsloads
 import re, requests, queue
-#from fenom import client
 from classyscrapers.modules import source_utils
 
 

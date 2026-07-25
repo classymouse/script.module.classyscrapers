@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Classy Scrapers Module
 """
 
 from threading import Thread as thread

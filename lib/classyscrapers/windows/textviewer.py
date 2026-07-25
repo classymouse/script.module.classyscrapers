@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Classy Scrapers — text viewer window
 """
 
 from classyscrapers.windows.base import BaseDialog
 
+
 class TextViewerXML(BaseDialog):
 	def __init__(self, *args, **kwargs):
-		super(TextViewerXML, self).__init__(self, args)
+		BaseDialog.__init__(self, *args)
 		self.window_id = 2060
-		self.heading = kwargs.get('heading')
-		self.text = kwargs.get('text')
+		self.heading = kwargs.get('heading') or ''
+		self.text = kwargs.get('text') or ''
 
 	def onInit(self):
-		super(TextViewerXML, self).onInit()
 		self.set_properties()
-		self.setFocusId(self.window_id)
+		try:
+			self.setFocusId(self.window_id)
+		except Exception:
+			pass
 
 	def run(self):
 		self.doModal()

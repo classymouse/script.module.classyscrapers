@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Updated 2025-10-07 for new TorrentGalaxy JSON endpoint with mirror fallbacks
 """
-   fenomscrapers Project
+   Classy Scrapers Project
 """
 
 import re

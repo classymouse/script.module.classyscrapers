@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Classy Scrapers Module
 """
 import sqlite3 as db
 from classyscrapers.modules.control import existsPath, dataPath, makeFile, undesirablescacheFile, lang

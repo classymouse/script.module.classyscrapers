@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <settings version="1">
 	<section id="script.module.classyscrapers">
-		<category id="general" label="32050" help="32350">			
+		<category id="general" label="32050" help="32350">
 			<group id="1" >
 				<setting id="cleanSettingsButton" type="action" label="32041" help="">
 					<level>0</level>
@@ -84,11 +84,12 @@
 				</setting>
 				<setting id="undesireablesFilterHelp" type="action" label="32003" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://script.module.classyscrapers/?action=ShowHelp&amp;name=undesirablesFilter)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<control type="button" format="action"/>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://script.module.classyscrapers/?action=ShowHelp&amp;name=undesirablesFilter)</data>
+					</control>
 				</setting>
 				<setting id="filter.foreign.single.audio" type="boolean" label="32017" help="">
 					<level>0</level>
@@ -121,15 +122,16 @@
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<control type="button" format="action"/>					
-				</setting>				
+					<control type="button" format="action"/>
+				</setting>
 				<setting id="torrentInfoButton" type="action" label="32040" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://script.module.classyscrapers/?action=ShowHelp&amp;name=torrentInfo)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<control type="button" format="action"/>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://script.module.classyscrapers/?action=ShowHelp&amp;name=torrentInfo)</data>
+					</control>
 				</setting>
 			</group>
 			<group id="2" label="32509">
@@ -138,15 +140,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="torrentio.bypass_filter" type="boolean" label="32561" help="32562" parent="provider.torrentio">
-					<level>0</level>
+				<!-- Hidden advanced toggle — was showing as a blank checkbox under Torrentio in Omega -->
+				<setting id="torrentio.bypass_filter" type="boolean" label="32561" help="32562">
+					<level>3</level>
 					<default>false</default>
-					<visible>false</visible>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="provider.torrentio">true</condition>
-						</dependency>
-					</dependencies>
+					<visible>true</visible>
 					<control type="toggle"/>
 				</setting>
 				<setting id="provider.dmm" type="boolean" label="32600" help="">
@@ -168,12 +166,12 @@
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting>	
+				</setting>
 				<setting id="provider.comet" type="boolean" label="32148" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting>									
+				</setting>
 				<setting id="provider.torz" type="boolean" label="32157" help="">
 					<level>0</level>
 					<default>false</default>
@@ -183,14 +181,14 @@
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting>			
-			</group>	
+				</setting>
+			</group>
 			<group id="3" label="32511">
 				<setting id="provider.kickass2" type="boolean" label="32111" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting>								
+				</setting>
 				<setting id="provider.piratebay" type="boolean" label="32117" help="">
 					<level>0</level>
 					<default>false</default>
@@ -205,12 +203,12 @@
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting>	
+				</setting>
 				<setting id="provider.torrentgalaxy" type="boolean" label="32125" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting>				
+				</setting>
 				<setting id="provider.nyaa" type="boolean" label="32116" help="">
 					<level>0</level>
 					<default>false</default>

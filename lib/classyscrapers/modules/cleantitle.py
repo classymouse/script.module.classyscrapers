@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module changed 10-11-22 by umbrelladev
+	Classy Scrapers Module
 """
 
 import re

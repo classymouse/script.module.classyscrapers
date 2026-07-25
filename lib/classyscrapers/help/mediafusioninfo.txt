@@ -10,4 +10,4 @@ The MediaFusion scraper works well on it's own, but you can get a slightly more 
 
 4. Leave the browser window open and come back to the ClassyScrapers/Providers/MediaFusion to select "Setup using Device PIN Code" which will give you a PIN code.
 
-5. Go back to the mediafuson page in your browser and Input the PIN code into the empty field and click submit. You can now close your browser and save your ViperScraper settings. 
+5. Go back to the mediafuson page in your browser and Input the PIN code into the empty field and click submit. You can now close your browser and save your Classy Scrapers settings. 
