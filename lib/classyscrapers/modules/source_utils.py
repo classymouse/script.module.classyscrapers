@@ -128,6 +128,15 @@ def aliases_to_array(aliases, filter=None):
 		log_utils.error()
 		return []
 
+def movie_years(year):
+	'''Year ±1 window for movie title checks. None if year missing/invalid.'''
+	try:
+		y = int(str(year).strip())
+	except (TypeError, ValueError):
+		return None
+	return [str(y - 1), str(y), str(y + 1)]
+
+
 def check_title(title, aliases, release_title, hdlr, year, years=None): # non pack file title check, single eps and movies
 	if years: # for movies only, scraper to pass None for episodes
 		if not any(value in release_title for value in years): return False
@@ -623,10 +632,17 @@ def base32_to_hex(hash, caller):
 	return hex
 
 def scraper_error(provider):
-	import traceback
+	'''Log a one-line exception summary (no full traceback spam).'''
+	import sys
 	from classyscrapers.modules import log_utils
-	failure = traceback.format_exc()
-	log_utils.log(provider.upper() + ' - Exception: \n' + str(failure), caller='scraper_error', level=log_utils.LOGERROR)
+	exc = sys.exc_info()[1]
+	summary = '%s: %s' % (type(exc).__name__, exc) if exc else 'unknown error'
+	log_utils.log(
+		'%s - Exception: %s' % (provider.upper(), summary),
+		caller='scraper_error',
+		level=log_utils.LOGERROR,
+	)
+
 
 def is_host_valid(url, domains):
 	try:

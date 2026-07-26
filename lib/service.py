@@ -17,13 +17,16 @@ class CheckSettingsFile:
 			profile_dir = control.dataPath
 			if not control.existsPath(profile_dir):
 				success = control.makeDirs(profile_dir)
-				if success: xbmc.log('%s : created successfully' % profile_dir, LOGINFO)
-			else: xbmc.log('%s : already exists' % profile_dir, LOGINFO)
+				if success:
+					xbmc.log('[ script.module.classyscrapers ]  %s : created successfully' % profile_dir, LOGINFO)
+			else:
+				xbmc.log('[ script.module.classyscrapers ]  %s : already exists' % profile_dir, LOGINFO)
 			settings_xml = control.joinPath(profile_dir, 'settings.xml')
 			if not control.existsPath(settings_xml):
 				control.setSetting('module.provider', 'ClassyScrapers')
-				xbmc.log('%s : created successfully' % settings_xml, LOGINFO)
-			else: xbmc.log('%s : already exists' % settings_xml, LOGINFO)
+				xbmc.log('[ script.module.classyscrapers ]  %s : created successfully' % settings_xml, LOGINFO)
+			else:
+				xbmc.log('[ script.module.classyscrapers ]  %s : already exists' % settings_xml, LOGINFO)
 			return xbmc.log('[ script.module.classyscrapers ]  Finished CheckSettingsFile Service', LOGINFO)
 		except:
 			import traceback
@@ -54,6 +57,13 @@ class CheckUndesirablesDatabase:
 		return xbmc.log('[ script.module.classyscrapers ]  Finished "CheckUndesirablesDatabase" Service', LOGINFO)
 
 def main():
+	# Rotate previous session log first (Crew/Classy pattern) so this boot starts clean.
+	try:
+		from classyscrapers.modules import log_utils
+		log_utils.rotate_session_log()
+	except Exception:
+		pass
+
 	while not control.monitor.abortRequested():
 		xbmc.log('[ script.module.classyscrapers ]  Service Started', LOGINFO)
 		CheckSettingsFile().run()

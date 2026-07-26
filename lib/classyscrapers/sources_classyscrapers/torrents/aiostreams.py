@@ -74,7 +74,7 @@ class source:
 			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
 			aliases = data['aliases']
 			episode_title = data['title'] if 'tvshowtitle' in data else None
-			total_seasons = data['total_seasons'] if 'tvshowtitle' in data else None
+			total_seasons = data.get('total_seasons') if 'tvshowtitle' in data else None
 			year = data['year']
 			imdb = data['imdb']
 			if 'tvshowtitle' in data:

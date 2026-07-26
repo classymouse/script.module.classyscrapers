@@ -38,7 +38,7 @@ class source:
 			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
 			aliases = data['aliases']
 			episode_title = data['title'] if 'tvshowtitle' in data else None
-			total_seasons = data['total_seasons'] if 'tvshowtitle' in data else None
+			total_seasons = data.get('total_seasons') if 'tvshowtitle' in data else None
 			year = data['year']
 			imdb = data['imdb']
 			if 'tvshowtitle' in data:
@@ -51,7 +51,7 @@ class source:
 				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
 			# log_utils.log('url = %s' % url)
 			results = requests.get(url, timeout=self.timeout) # client.request(url, timeout=7)
-			files = results.json()['streams'] # jsloads(results)['streams']
+			files = (results.json() or {}).get('streams') or []
 			_INFO = re.compile(r'💾.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
@@ -65,7 +65,10 @@ class source:
 				if 'url' in file: hash = re.search(r'\b\w{40}\b', file['url']).group()
 				else: hash = file['infoHash']
 				file_title = file['description'].replace('┈➤', '\n').split('\n')
-				file_info = [x for x in file_title if _INFO.search(x)][0]
+				info_matches = [x for x in file_title if _INFO.search(x)]
+				if not info_matches:
+					continue
+				file_info = info_matches[0]
 
 				name = source_utils.clean_name(file_title[0])
 

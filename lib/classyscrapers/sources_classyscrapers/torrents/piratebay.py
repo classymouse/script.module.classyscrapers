@@ -43,16 +43,39 @@ class source:
 				title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's').replace('·', '-')
 				episode_title = None
 				hdlr = year
-				years = [str(int(year)-1), str(year), str(int(year)+1)]
+				years = source_utils.movie_years(year)
 			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', title), hdlr)
 			url = '%s%s' % (self.base_link, self.search_link % quote(query))
 			# log_utils.log('url = %s' % url)
 			results = client.request(url, output='extended', timeout=5)
 			if not results: return sources
-			if results[1] in ('200', '201'): files = jsloads(results[0])
+			# extended → (body, status, …); status may be int or str
+			status = str(results[1] if len(results) > 1 else '')
+			body = results[0] if isinstance(results, (list, tuple)) else results
+			if status in ('200', '201'):
+				files = jsloads(body)
 			else:
 				from classyscrapers.modules import log_utils
-				log_utils.log('PIRATEBAY: Failed query for (%s) : %s' % (url, results))
+				preview = body
+				if isinstance(preview, (bytes, bytearray)):
+					preview = preview[:120]
+				elif isinstance(preview, str):
+					preview = preview[:120]
+				else:
+					preview = type(preview).__name__
+				log_utils.log(
+					'PIRATEBAY: Failed query status=%s url=%s body[:120]=%r'
+					% (status, url, preview),
+					level=log_utils.LOGWARNING,
+				)
+				return sources
+			# API sometimes returns a JSON error object instead of a list
+			if not isinstance(files, list):
+				from classyscrapers.modules import log_utils
+				log_utils.log(
+					'PIRATEBAY: unexpected payload type=%s' % type(files).__name__,
+					level=log_utils.LOGWARNING,
+				)
 				return sources
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()

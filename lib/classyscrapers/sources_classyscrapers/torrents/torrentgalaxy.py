@@ -77,7 +77,7 @@ class source:
                     data["title"].replace("&", "and").replace("/", " ").replace("$", "s")
                 )
                 hdlr = year
-                years = [str(int(year) - 1), str(year), str(int(year) + 1)]
+                years = source_utils.movie_years(year)
                 search_term = imdb if imdb else quote_plus(title)
 
             posts = []
@@ -157,18 +157,20 @@ class source:
                 log_utils.log(f"TGX parse error: {e}")
                 source_utils.scraper_error("TORRENTGALAXY")
 
-        logged = False
-        for quality in self.item_totals:
-            if self.item_totals[quality] > 0:
-                logged = True
-                log_utils.log(
-                    f"#STATS - TORRENTGALAXY found {self.item_totals[quality]} {quality}"
-                )
-        if not logged:
-            log_utils.log("#STATS - TORRENTGALAXY found nothing")
-
+        parts = [
+            f'{quality}={count}'
+            for quality, count in self.item_totals.items()
+            if count > 0
+        ]
         endTime = time()
-        log_utils.log(f"#STATS - TORRENTGALAXY took {(endTime - startTime):.2f}s")
+        if parts:
+            log_utils.log(
+                f"#STATS - TORRENTGALAXY found {', '.join(parts)} in {(endTime - startTime):.2f}s"
+            )
+        else:
+            log_utils.log(
+                f"#STATS - TORRENTGALAXY found nothing in {(endTime - startTime):.2f}s"
+            )
         return sources
 
     def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
@@ -216,20 +218,20 @@ class source:
             [i.start() for i in threads]
             [i.join() for i in threads]
 
-            logged = False
-            for quality in self.item_totals:
-                if self.item_totals[quality] > 0:
-                    logged = True
-                    log_utils.log(
-                        f"#STATS - TORRENTGALAXY(pack) found {self.item_totals[quality]} {quality}"
-                    )
-            if not logged:
-                log_utils.log("#STATS - TORRENTGALAXY(pack) found nothing")
-
+            parts = [
+                f'{quality}={count}'
+                for quality, count in self.item_totals.items()
+                if count > 0
+            ]
             endTime = time()
-            log_utils.log(
-                f"#STATS - TORRENTGALAXY(pack) took {(endTime - startTime):.2f}s"
-            )
+            if parts:
+                log_utils.log(
+                    f"#STATS - TORRENTGALAXY(pack) found {', '.join(parts)} in {(endTime - startTime):.2f}s"
+                )
+            else:
+                log_utils.log(
+                    f"#STATS - TORRENTGALAXY(pack) found nothing in {(endTime - startTime):.2f}s"
+                )
             return self.sources
 
         except Exception as e:

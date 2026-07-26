@@ -55,14 +55,15 @@ class source:
 				hdlr = 'S%02dE%02d' % (int(season), int(episode))
 				years = None
 				url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, episode))
-				files = cache.get(self._get_files, 10, url)
+				# cache.get returns None on empty/error (treats '[]' as invalid)
+				files = cache.get(self._get_files, 10, url) or []
 			else:
 				title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's')
 				episode_title = None
 				hdlr = year
-				years = [str(int(year)-1), str(year), str(int(year)+1)]
+				years = source_utils.movie_years(year)
 				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
-				files = self._get_files(url)
+				files = self._get_files(url) or []
 			homeWindow.clearProperty('classyscrapers.torrentio.performing_single_scrape')
 			_INFO = re.compile(r'👤.*')
 			undesirables = source_utils.get_undesirables()
@@ -70,6 +71,9 @@ class source:
 		except:
 			homeWindow.clearProperty('classyscrapers.torrentio.performing_single_scrape')
 			source_utils.scraper_error('TORRENTIO')
+			return sources
+
+		if not files:
 			return sources
 
 		for file in files:
@@ -124,12 +128,15 @@ class source:
 			year = data['year']
 			season = data['season']
 			url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, data['episode']))
-			files = cache.get(self._get_files, 10, url)
+			files = cache.get(self._get_files, 10, url) or []
 			_INFO = re.compile(r'👤.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
 			source_utils.scraper_error('TORRENTIO')
+			return sources
+
+		if not files:
 			return sources
 
 		for file in files:

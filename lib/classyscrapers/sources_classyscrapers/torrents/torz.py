@@ -41,7 +41,7 @@ class source:
 				hdlr = year
 			# log_utils.log('url = %s' % url)
 			results = requests.get(url, timeout=self.timeout) # client.request(url, timeout=7)
-			files = results.json()['streams'] # jsloads(results)['streams']
+			files = (results.json() or {}).get('streams') or []
 			_INFO = re.compile(r'(?:💾|📦).*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()

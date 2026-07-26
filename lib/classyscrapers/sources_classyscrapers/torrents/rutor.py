@@ -49,7 +49,7 @@ class source:
 				search_link = self.search_link % (self.movie_params, '%s')
 			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', title), hdlr)
 			url = '%s%s' % (self.base_link, search_link % (quote_plus(query)))
-			log_utils.log('url = %s' % url)
+			# log_utils.log('url = %s' % url)  # noisy on every scrape
 			html = client.request(url, timeout=7)
 
 			# if not html or '<tbody' not in html: return sources
@@ -159,7 +159,7 @@ class source:
 
 	def get_sources_packs(self, link):
 		try:
-			log_utils.log('link = %s' % link)
+			# log_utils.log('link = %s' % link)
 			results = client.request(link, timeout=7)
 			# if not html or '<tbody' not in html: return sources
 			if not results or '<div id="index">' not in results: return sources
