@@ -1,3 +1,6 @@
+[B]1.0.3[/B]
+- Fix Mediafusion returning 0 after upstream payload format change
+
 [B]1.0.2[/B]
 - Quieter logging: truncate long lines, plain tags (no COLOR markup), no reverse-rewrite
 - scraper_error is one line (no full traceback dump)

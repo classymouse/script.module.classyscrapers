@@ -49,7 +49,9 @@ class source:
 			# log_utils.log('url = %s' % url)
 			results = requests.get(url, headers=self._headers(), timeout=self.timeout) # client.request(url, timeout=7)
 			files = results.json()['streams'] # jsloads(results)['streams']
-			_INFO = re.compile(r'💾.*')
+			# Upstream moved size/seeders from disk emoji to package emoji (and sometimes
+			# only a bare size token). Match both so we do not drop every stream.
+			_INFO = re.compile(r'(?:[💾📦].*|(?:(?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb)))')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
@@ -69,15 +71,20 @@ class source:
 					if not hash:
 						continue
 				desc = file.get('description') or file.get('title') or ''
-				file_title = desc.replace('┈➤', '\n').split('\n')
-				info_matches = [x for x in file_title if _INFO.search(x)]
+				desc_lines = desc.replace('┈➤', '\n').split('\n')
+				info_matches = [x for x in desc_lines if _INFO.search(x)]
 				if not info_matches:
 					continue
 				file_info = info_matches[0]
-				if not file_title or not file_title[0]:
+				# Current MediaFusion puts tags in description line 0; the real
+				# release name lives in behaviorHints.filename (Coco-style).
+				hints = file.get('behaviorHints') or {}
+				filename = (hints.get('filename') or '').strip()
+				raw_name = filename or (desc_lines[0] if desc_lines else '')
+				if not raw_name:
 					continue
 
-				name = source_utils.clean_name(file_title[0])
+				name = source_utils.clean_name(raw_name)
 
 				if not source_utils.check_title(title, aliases, name, hdlr, year):
 					if total_seasons is None: continue
