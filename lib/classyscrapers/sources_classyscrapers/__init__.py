@@ -19,8 +19,8 @@ torrent_providers = torrents.__all__
 total_providers = {'torrents': torrent_providers}
 all_providers = []
 try:
-	for key, value in total_providers.iteritems():
-		all_providers += value
+    for key, value in total_providers.iteritems():
+        all_providers += value
 except:
-	for key, value in total_providers.items():
-		all_providers += value
+    for key, value in total_providers.items():
+        all_providers += value

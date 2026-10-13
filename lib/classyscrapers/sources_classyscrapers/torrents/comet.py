@@ -1,113 +1,74 @@
 # created by kodifitzwell
 """
-	Classy Scrapers Project
+    Classy Scrapers Project
 """
 
-import re, requests
+import re
+import requests
 from classyscrapers.modules import source_utils
+from classyscrapers.modules.torrent_base import TorrentSourceBase
 
 
-class source:
-	timeout = 7
-	priority = 2
-	pack_capable = False # packs parsed in sources function
-	hasMovies = True
-	hasEpisodes = True
-	def __init__(self):
-		params = (
-			'eyJtYXhSZXN1bHRzUGVyUmVzb2x1dGlvbiI6MCwibWF4U2l6ZSI6MCwiY2FjaGVkT25seSI6ZmFsc2Us'
-			'InJlbW92ZVRyYXNoIjp0cnVlLCJyZXN1bHRGb3JtYXQiOlsidGl0bGUiLCJtZXRhZGF0YSIsInNpemUi'
-			'LCJsYW5ndWFnZXMiXSwiZGVicmlkU2VydmljZSI6InRvcnJlbnQiLCJkZWJyaWRBcGlLZXkiOiIiLCJk'
-			'ZWJyaWRTdHJlYW1Qcm94eVBhc3N3b3JkIjoiIiwibGFuZ3VhZ2VzIjp7InJlcXVpcmVkIjpbXSwiZXhj'
-			'bHVkZSI6W10sInByZWZlcnJlZCI6W119LCJyZXNvbHV0aW9ucyI6e30sIm9wdGlvbnMiOnsicmVtb3Zl'
-			'X3JhbmtzX3VuZGVyIjotMTAwMDAwMDAwMDAsImFsbG93X2VuZ2xpc2hfaW5fbGFuZ3VhZ2VzIjpmYWxz'
-			'ZSwicmVtb3ZlX3Vua25vd25fbGFuZ3VhZ2VzIjpmYWxzZX19'
-		)
-		self.language = ['en']
-		self.base_link = "https://cometfortheweebs.midnightignite.me"
-		self.movieSearch_link = f"/{params}/stream/movie/%s.json"
-		self.tvSearch_link = f"/{params}/stream/series/%s:%s:%s.json"
-		self.min_seeders = 0
+class source(TorrentSourceBase):
+    timeout = 7
+    priority = 2
+    pack_capable = False  # packs parsed in sources via pack_fallback
+    pack_fallback = True
+    hasMovies = True
+    hasEpisodes = True
+    provider = 'comet'
+    min_seeders = 0
+    _INFO = re.compile(r'💾.*')
+    _SIZE = re.compile(r'((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb))')
+    _SEEDERS = re.compile(r'👤\s*(\d+)')
 
-	def sources(self, data, hostDict):
-		sources = []
-		if not data: return sources
-		sources_append = sources.append
-		try:
-			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
-			aliases = data['aliases']
-			episode_title = data['title'] if 'tvshowtitle' in data else None
-			total_seasons = data.get('total_seasons') if 'tvshowtitle' in data else None
-			year = data['year']
-			imdb = data['imdb']
-			if 'tvshowtitle' in data:
-				season = data['season']
-				episode = data['episode']
-				hdlr = 'S%02dE%02d' % (int(season), int(episode))
-				url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, episode))
-			else:
-				hdlr = year
-				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
-			# log_utils.log('url = %s' % url)
-			results = requests.get(url, timeout=self.timeout) # client.request(url, timeout=7)
-			files = (results.json() or {}).get('streams') or []
-			_INFO = re.compile(r'💾.*')
-			undesirables = source_utils.get_undesirables()
-			check_foreign_audio = source_utils.check_foreign_audio()
-		except:
-			source_utils.scraper_error('COMET')
-			return sources
+    def __init__(self):
+        params = (
+            'eyJtYXhSZXN1bHRzUGVyUmVzb2x1dGlvbiI6MCwibWF4U2l6ZSI6MCwiY2FjaGVkT25seSI6ZmFsc2Us'
+            'InJlbW92ZVRyYXNoIjp0cnVlLCJyZXN1bHRGb3JtYXQiOlsidGl0bGUiLCJtZXRhZGF0YSIsInNpemUi'
+            'LCJsYW5ndWFnZXMiXSwiZGVicmlkU2VydmljZSI6InRvcnJlbnQiLCJkZWJyaWRBcGlLZXkiOiIiLCJk'
+            'ZWJyaWRTdHJlYW1Qcm94eVBhc3N3b3JkIjoiIiwibGFuZ3VhZ2VzIjp7InJlcXVpcmVkIjpbXSwiZXhj'
+            'bHVkZSI6W10sInByZWZlcnJlZCI6W119LCJyZXNvbHV0aW9ucyI6e30sIm9wdGlvbnMiOnsicmVtb3Zl'
+            'X3JhbmtzX3VuZGVyIjotMTAwMDAwMDAwMDAsImFsbG93X2VuZ2xpc2hfaW5fbGFuZ3VhZ2VzIjpmYWxz'
+            'ZSwicmVtb3ZlX3Vua25vd25fbGFuZ3VhZ2VzIjpmYWxzZX19'
+        )
+        self.language = ['en']
+        self.base_link = 'https://cometfortheweebs.midnightignite.me'
+        self.movieSearch_link = '/%s/stream/movie/%%s.json' % params
+        self.tvSearch_link = '/%s/stream/series/%%s:%%s:%%s.json' % params
 
-		for file in files:
-			try:
-				package, episode_start = None, 0
-				if 'url' in file: hash = re.search(r'\b\w{40}\b', file['url']).group()
-				else: hash = file['infoHash']
-				file_title = file['description'].replace('┈➤', '\n').split('\n')
-				info_matches = [x for x in file_title if _INFO.search(x)]
-				if not info_matches:
-					continue
-				file_info = info_matches[0]
+    def fetch_files(self, ctx):
+        results = requests.get(ctx['url'], timeout=self.timeout)
+        return (results.json() or {}).get('streams') or []
 
-				name = source_utils.clean_name(file_title[0])
-
-				if not source_utils.check_title(title, aliases, name, hdlr, year):
-					if total_seasons is None: continue
-					valid, last_season = source_utils.filter_show_pack(title, aliases, imdb, year, season, name, total_seasons)
-					if not valid:
-						valid, episode_start, episode_end = source_utils.filter_season_pack(title, aliases, year, season, name)
-						if not valid: continue
-						else: package = 'season'
-					else: package = 'show'
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
-				if source_utils.remove_lang(name_info, check_foreign_audio): continue
-				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
-
-				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name) 
-
-				try:
-					seeders = int(re.search(r'👤\s*(\d+)', file_info).group(1))
-					if self.min_seeders > seeders: continue
-				except: seeders = 0
-
-				quality, info = source_utils.get_release_quality(name_info, url)
-				try:
-					size = re.search(r'((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb))', file_info).group(0)
-					dsize, isize = source_utils._size(size)
-					info.insert(0, isize)
-				except: dsize = 0
-				info = ' | '.join(info)
-
-				item = {
-					'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
-					'provider': 'comet', 'url': url, 'hash': hash, 'name': name, 'name_info': name_info,
-					'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders
-				}
-				if package: item['package'] = package
-				if package == 'show': item.update({'last_season': last_season})
-				if episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
-				sources_append(item)
-			except:
-				source_utils.scraper_error('COMET')
-		return sources
+    def parse_file(self, file, ctx):
+        if 'url' in file:
+            m = re.search(r'\b\w{40}\b', file['url'] or '')
+            if not m:
+                return None
+            hash_ = m.group()
+        else:
+            hash_ = file.get('infoHash')
+            if not hash_:
+                return None
+        file_title = file['description'].replace('┈➤', '\n').split('\n')
+        info_matches = [x for x in file_title if self._INFO.search(x)]
+        if not info_matches:
+            return None
+        file_info = info_matches[0]
+        name = source_utils.clean_name(file_title[0])
+        try:
+            seeders = int(self._SEEDERS.search(file_info).group(1))
+        except Exception:
+            seeders = 0
+        try:
+            dsize, isize = source_utils._size(self._SIZE.search(file_info).group(0))
+        except Exception:
+            dsize, isize = 0, None
+        return {
+            'hash': hash_,
+            'name': name,
+            'seeders': seeders,
+            'dsize': dsize,
+            'isize': isize,
+        }

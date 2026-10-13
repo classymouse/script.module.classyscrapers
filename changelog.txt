@@ -1,3 +1,8 @@
+[B]1.0.4[/B]
+- TorrentSourceBase pilot (torz / comet / mediafusion / aiostreams / zilean / torrentsdb)
+- Zilean: empty/None API responses return gracefully (no NoneType crash)
+- Tabs normalized to spaces across scraper pack (Kodi Matrix)
+
 [B]1.0.3[/B]
 - Fix Mediafusion returning 0 after upstream payload format change
 

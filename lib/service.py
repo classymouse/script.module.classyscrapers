@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Classy Scrapers Module
+    Classy Scrapers Module
 """
 
 import xbmc
@@ -10,70 +10,70 @@ window = control.homeWindow
 LOGINFO = 1 # (LOGNOTICE(2) deprecated in 19, use LOGINFO(1))
 
 class CheckSettingsFile:
-	def run(self):
-		try:
-			xbmc.log('[ script.module.classyscrapers ]  CheckSettingsFile Service Starting...', LOGINFO)
-			window.clearProperty('classyscrapers')
-			profile_dir = control.dataPath
-			if not control.existsPath(profile_dir):
-				success = control.makeDirs(profile_dir)
-				if success:
-					xbmc.log('[ script.module.classyscrapers ]  %s : created successfully' % profile_dir, LOGINFO)
-			else:
-				xbmc.log('[ script.module.classyscrapers ]  %s : already exists' % profile_dir, LOGINFO)
-			settings_xml = control.joinPath(profile_dir, 'settings.xml')
-			if not control.existsPath(settings_xml):
-				control.setSetting('module.provider', 'ClassyScrapers')
-				xbmc.log('[ script.module.classyscrapers ]  %s : created successfully' % settings_xml, LOGINFO)
-			else:
-				xbmc.log('[ script.module.classyscrapers ]  %s : already exists' % settings_xml, LOGINFO)
-			return xbmc.log('[ script.module.classyscrapers ]  Finished CheckSettingsFile Service', LOGINFO)
-		except:
-			import traceback
-			traceback.print_exc()
+    def run(self):
+        try:
+            xbmc.log('[ script.module.classyscrapers ]  CheckSettingsFile Service Starting...', LOGINFO)
+            window.clearProperty('classyscrapers')
+            profile_dir = control.dataPath
+            if not control.existsPath(profile_dir):
+                success = control.makeDirs(profile_dir)
+                if success:
+                    xbmc.log('[ script.module.classyscrapers ]  %s : created successfully' % profile_dir, LOGINFO)
+            else:
+                xbmc.log('[ script.module.classyscrapers ]  %s : already exists' % profile_dir, LOGINFO)
+            settings_xml = control.joinPath(profile_dir, 'settings.xml')
+            if not control.existsPath(settings_xml):
+                control.setSetting('module.provider', 'ClassyScrapers')
+                xbmc.log('[ script.module.classyscrapers ]  %s : created successfully' % settings_xml, LOGINFO)
+            else:
+                xbmc.log('[ script.module.classyscrapers ]  %s : already exists' % settings_xml, LOGINFO)
+            return xbmc.log('[ script.module.classyscrapers ]  Finished CheckSettingsFile Service', LOGINFO)
+        except:
+            import traceback
+            traceback.print_exc()
 
 class SettingsMonitor(control.monitor_class):
-	def __init__ (self):
-		control.monitor_class.__init__(self)
-		window.setProperty('classyscrapers.debug.reversed', control.setting('debug.reversed'))
-		xbmc.log('[ script.module.classyscrapers ]  Settings Monitor Service Starting...', LOGINFO)
+    def __init__ (self):
+        control.monitor_class.__init__(self)
+        window.setProperty('classyscrapers.debug.reversed', control.setting('debug.reversed'))
+        xbmc.log('[ script.module.classyscrapers ]  Settings Monitor Service Starting...', LOGINFO)
 
-	def onSettingsChanged(self): # Kodi callback when the addon settings are changed
-		window.clearProperty('classyscrapers')
-		control.sleep(50)
-		refreshed = control.make_settings_dict()
-		control.refresh_debugReversed()
+    def onSettingsChanged(self): # Kodi callback when the addon settings are changed
+        window.clearProperty('classyscrapers')
+        control.sleep(50)
+        refreshed = control.make_settings_dict()
+        control.refresh_debugReversed()
 
 class CheckUndesirablesDatabase:
-	def run(self):
-		xbmc.log('[ script.module.classyscrapers ]  "CheckUndesirablesDatabase" Service Starting...', LOGINFO)
-		from classyscrapers.modules import undesirables
-		try:
-			old_database = undesirables.Undesirables().check_database()
-			if old_database: undesirables.add_new_default_keywords()
-		except:
-			import traceback
-			traceback.print_exc()
-		return xbmc.log('[ script.module.classyscrapers ]  Finished "CheckUndesirablesDatabase" Service', LOGINFO)
+    def run(self):
+        xbmc.log('[ script.module.classyscrapers ]  "CheckUndesirablesDatabase" Service Starting...', LOGINFO)
+        from classyscrapers.modules import undesirables
+        try:
+            old_database = undesirables.Undesirables().check_database()
+            if old_database: undesirables.add_new_default_keywords()
+        except:
+            import traceback
+            traceback.print_exc()
+        return xbmc.log('[ script.module.classyscrapers ]  Finished "CheckUndesirablesDatabase" Service', LOGINFO)
 
 def main():
-	# Rotate previous session log first (Crew/Classy pattern) so this boot starts clean.
-	try:
-		from classyscrapers.modules import log_utils
-		log_utils.rotate_session_log()
-	except Exception:
-		pass
+    # Rotate previous session log first (Crew/Classy pattern) so this boot starts clean.
+    try:
+        from classyscrapers.modules import log_utils
+        log_utils.rotate_session_log()
+    except Exception:
+        pass
 
-	while not control.monitor.abortRequested():
-		xbmc.log('[ script.module.classyscrapers ]  Service Started', LOGINFO)
-		CheckSettingsFile().run()
-		CheckUndesirablesDatabase().run()
-		if control.isVersionUpdate():
-			control.clean_settings()
-			xbmc.log('[ script.module.classyscrapers ]  Settings file cleaned complete', LOGINFO)
-		break
-	SettingsMonitor().waitForAbort()
-	shutdown_executor()
-	xbmc.log('[ script.module.classyscrapers ]  Service Stopped', LOGINFO)
+    while not control.monitor.abortRequested():
+        xbmc.log('[ script.module.classyscrapers ]  Service Started', LOGINFO)
+        CheckSettingsFile().run()
+        CheckUndesirablesDatabase().run()
+        if control.isVersionUpdate():
+            control.clean_settings()
+            xbmc.log('[ script.module.classyscrapers ]  Settings file cleaned complete', LOGINFO)
+        break
+    SettingsMonitor().waitForAbort()
+    shutdown_executor()
+    xbmc.log('[ script.module.classyscrapers ]  Service Stopped', LOGINFO)
 
 main()

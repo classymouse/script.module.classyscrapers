@@ -1,127 +1,84 @@
 # created by kodifitzwell
 """
-	Classy Scrapers Project
+    Classy Scrapers Project
 """
 
-import re, requests
+import re
+import requests
 from classyscrapers.modules import source_utils
+from classyscrapers.modules.torrent_base import TorrentSourceBase
 
-class source:
-	timeout = 7
-	priority = 2
-	pack_capable = False # packs parsed in sources function
-	hasMovies = True
-	hasEpisodes = True
-	def __init__(self):
-		self.language = ['en']
-		self.base_link = "https://mediafusionfortheweebs.midnightignite.me"
-		self.movieSearch_link = '/stream/movie/%s.json'
-		self.tvSearch_link = '/stream/series/%s:%s:%s.json'
-		self.min_seeders = 0
 
-	def _headers(self):
-		return {'encoded_user_data': (
-			'eyJlbmFibGVfY2F0YWxvZ3MiOiBmYWxzZSwgIm1heF9zdHJlYW1zX3Blcl9yZXNvbHV0aW9uIjogOTks'
-			'ICJ0b3JyZW50X3NvcnRpbmdfcHJpb3JpdHkiOiBbXSwgImNlcnRpZmljYXRpb25fZmlsdGVyIjogWyJE'
-			'aXNhYmxlIl0sICJudWRpdHlfZmlsdGVyIjogWyJEaXNhYmxlIl19'
-		)}
+class source(TorrentSourceBase):
+    timeout = 7
+    priority = 2
+    pack_capable = False  # packs parsed in sources via pack_fallback
+    pack_fallback = True
+    hasMovies = True
+    hasEpisodes = True
+    provider = 'mediafusion'
+    min_seeders = 0
+    # Upstream moved size/seeders from disk emoji to package emoji (and sometimes
+    # only a bare size token). Match both so we do not drop every stream.
+    _INFO = re.compile(
+        r'(?:[💾📦].*|(?:(?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb)))'
+    )
+    _SIZE = re.compile(r'((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb))')
+    _SEEDERS = re.compile(r'👤\s*(\d+)')
 
-	def sources(self, data, hostDict):
-		sources = []
-		if not data: return sources
-		sources_append = sources.append
-		try:
-			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
-			aliases = data['aliases']
-			episode_title = data['title'] if 'tvshowtitle' in data else None
-			total_seasons = data.get('total_seasons') if 'tvshowtitle' in data else None
-			year = data['year']
-			imdb = data['imdb']
-			if 'tvshowtitle' in data:
-				season = data['season']
-				episode = data['episode']
-				hdlr = 'S%02dE%02d' % (int(season), int(episode))
-				url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, episode))
-			else:
-				hdlr = year
-				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
-			# log_utils.log('url = %s' % url)
-			results = requests.get(url, headers=self._headers(), timeout=self.timeout) # client.request(url, timeout=7)
-			files = results.json()['streams'] # jsloads(results)['streams']
-			# Upstream moved size/seeders from disk emoji to package emoji (and sometimes
-			# only a bare size token). Match both so we do not drop every stream.
-			_INFO = re.compile(r'(?:[💾📦].*|(?:(?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb)))')
-			undesirables = source_utils.get_undesirables()
-			check_foreign_audio = source_utils.check_foreign_audio()
-		except:
-			source_utils.scraper_error('MEDIAFUSION')
-			return sources
+    def __init__(self):
+        self.language = ['en']
+        self.base_link = 'https://mediafusionfortheweebs.midnightignite.me'
+        self.movieSearch_link = '/stream/movie/%s.json'
+        self.tvSearch_link = '/stream/series/%s:%s:%s.json'
 
-		for file in files:
-			try:
-				package, episode_start = None, 0
-				if 'url' in file:
-					m = re.search(r'\b\w{40}\b', file.get('url') or '')
-					if not m:
-						continue
-					hash = m.group()
-				else:
-					hash = file.get('infoHash')
-					if not hash:
-						continue
-				desc = file.get('description') or file.get('title') or ''
-				desc_lines = desc.replace('┈➤', '\n').split('\n')
-				info_matches = [x for x in desc_lines if _INFO.search(x)]
-				if not info_matches:
-					continue
-				file_info = info_matches[0]
-				# Current MediaFusion puts tags in description line 0; the real
-				# release name lives in behaviorHints.filename (Coco-style).
-				hints = file.get('behaviorHints') or {}
-				filename = (hints.get('filename') or '').strip()
-				raw_name = filename or (desc_lines[0] if desc_lines else '')
-				if not raw_name:
-					continue
+    def _headers(self):
+        return {'encoded_user_data': (
+            'eyJlbmFibGVfY2F0YWxvZ3MiOiBmYWxzZSwgIm1heF9zdHJlYW1zX3Blcl9yZXNvbHV0aW9uIjogOTks'
+            'ICJ0b3JyZW50X3NvcnRpbmdfcHJpb3JpdHkiOiBbXSwgImNlcnRpZmljYXRpb25fZmlsdGVyIjogWyJE'
+            'aXNhYmxlIl0sICJudWRpdHlfZmlsdGVyIjogWyJEaXNhYmxlIl19'
+        )}
 
-				name = source_utils.clean_name(raw_name)
+    def fetch_files(self, ctx):
+        results = requests.get(ctx['url'], headers=self._headers(), timeout=self.timeout)
+        return (results.json() or {}).get('streams') or []
 
-				if not source_utils.check_title(title, aliases, name, hdlr, year):
-					if total_seasons is None: continue
-					valid, last_season = source_utils.filter_show_pack(title, aliases, imdb, year, season, name, total_seasons)
-					if not valid:
-						valid, episode_start, episode_end = source_utils.filter_season_pack(title, aliases, year, season, name)
-						if not valid: continue
-						else: package = 'season'
-					else: package = 'show'
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
-				if source_utils.remove_lang(name_info, check_foreign_audio): continue
-				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
-
-				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name) 
-
-				try:
-					seeders = int(re.search(r'👤\s*(\d+)', file_info).group(1))
-					if self.min_seeders > seeders: continue
-				except: seeders = 0
-
-				quality, info = source_utils.get_release_quality(name_info, url)
-				try:
-					size = re.findall(r'((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb))', file_info)[-1]
-					dsize, isize = source_utils._size(size)
-					info.insert(0, isize)
-				except: dsize = 0
-				info = ' | '.join(info)
-
-				item = {
-					'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
-					'provider': 'mediafusion', 'url': url, 'hash': hash, 'name': name, 'name_info': name_info,
-					'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders
-				}
-				if package: item['package'] = package
-				if package == 'show': item.update({'last_season': last_season})
-				if episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
-				sources_append(item)
-			except:
-				source_utils.scraper_error('MEDIAFUSION')
-		return sources
+    def parse_file(self, file, ctx):
+        if 'url' in file:
+            m = re.search(r'\b\w{40}\b', file.get('url') or '')
+            if not m:
+                return None
+            hash_ = m.group()
+        else:
+            hash_ = file.get('infoHash')
+            if not hash_:
+                return None
+        desc = file.get('description') or file.get('title') or ''
+        desc_lines = desc.replace('┈➤', '\n').split('\n')
+        info_matches = [x for x in desc_lines if self._INFO.search(x)]
+        if not info_matches:
+            return None
+        file_info = info_matches[0]
+        # Current MediaFusion puts tags in description line 0; the real
+        # release name lives in behaviorHints.filename (Coco-style).
+        hints = file.get('behaviorHints') or {}
+        filename = (hints.get('filename') or '').strip()
+        raw_name = filename or (desc_lines[0] if desc_lines else '')
+        if not raw_name:
+            return None
+        name = source_utils.clean_name(raw_name)
+        try:
+            seeders = int(self._SEEDERS.search(file_info).group(1))
+        except Exception:
+            seeders = 0
+        try:
+            dsize, isize = source_utils._size(self._SIZE.findall(file_info)[-1])
+        except Exception:
+            dsize, isize = 0, None
+        return {
+            'hash': hash_,
+            'name': name,
+            'seeders': seeders,
+            'dsize': dsize,
+            'isize': isize,
+        }

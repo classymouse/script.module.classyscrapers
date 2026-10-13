@@ -4,4 +4,9 @@ import os
 
 sourcePath = os.path.dirname(__file__)
 files = os.listdir(sourcePath)
-__all__ = [filename[:-3] for filename in files if not filename.startswith('__') and filename.endswith('.py')]
+# Skip __* and _* so helper modules (e.g. _base) are never treated as providers.
+__all__ = [
+    filename[:-3]
+    for filename in files
+    if filename.endswith('.py') and not filename.startswith('_')
+]
